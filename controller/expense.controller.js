@@ -21,38 +21,32 @@ module.exports = {
   },
 
   postExpense: (req, res) => {
-    //   console.log("bodyyyyyyyy", req.body);
     Expenses.build(req.body)
       .save()
       .then((data) => {
-        console.log("dataaaaaaaa", data);
         res.send(data);
       })
       .catch((err) => res.send(err));
   },
 
-  updateExpense: async (req, res) => {
-    try {
-      const user = {
-        name: req.body.category,
-        email: req.body.amountDetail,
-        phone: req.body.amount,
-      };
-      Expenses.update(user, { where: { id: req.params.id } });
-      res.send(user);
-    } catch (error) {
-      console.log(error);
-    }
-  },
-  
+
   deleteExpense: async (req, res) => {
     try {
-      // const deleteId = await Users.findByPk(req.params.id);
-      // console.log("deleteeeeeeeee",deleteId);
       const data = await Expenses.destroy({ where: { id: req.params.id } });
-      res.send(data, "Deleted");
+      console.log("Deleted",data)
+      res.send("data");
     } catch (error) {
       console.log(error);
     }
   },
+
+  signUp : async(req,res)=>{
+    try {
+      
+    } catch (error) {
+      
+    }
+  }
 };
+
+

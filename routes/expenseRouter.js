@@ -12,4 +12,6 @@ router.put("/expense/:id", expenseController.postExpense);
 
 router.delete("/expense/:id", expenseController.deleteExpense);
 
+router.post("/expense/signUp",expenseController.signUp);
+
 module.exports = router;

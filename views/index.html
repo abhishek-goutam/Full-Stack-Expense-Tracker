@@ -4,6 +4,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- <meta http-equiv="refresh" content="10"> -->
     <!-- CSS -->
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"
@@ -14,7 +15,7 @@
     <link rel="stylesheet" href="style.css" />
     <title>Expense Tracker</title>
   </head>
-  <body>
+  <body onload="getExpenses()">
     <header>
       <h2>Expense Tracker</h2>
     </header>
@@ -60,10 +61,10 @@
             <option value="expense">Expense</option>
           </select>
         </div>
-        <button class="btn">Add transaction</button>
+        <input class="submitBtn1" id ="submitBtn" type="button" value="submit" onclick="addTransaction() ">
       </form>
     </div>
     <!-- Further code here -->
-    <script src="script1.js"></script>
+    <script src="script.js"></script>
   </body>
 </html>

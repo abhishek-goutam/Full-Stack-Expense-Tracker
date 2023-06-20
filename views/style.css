@@ -105,7 +105,7 @@ select {
   width: 100%;
 }
 
-.btn {
+.submitBtn1 {
   cursor: pointer;
   background-color: #0366D6;
   box-shadow: var(--box-shadow);

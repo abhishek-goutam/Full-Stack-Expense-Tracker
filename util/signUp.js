@@ -10,8 +10,10 @@ async function signUp() {
       data
     );
     // console.log("Message",res.message);
+    // document.getElementById("addToMe").getElementsByClassName("row justify-content-center").innerHTML +=
+    // "<h3>User already exist</h3>";
     document.getElementById("addToMe").innerHTML +=
-    "<h3>User already exist</h3>";
+    "<h3>User already exist, Please try a different email!</h3>";
     // window.alert(res);
   } catch (error) {
     console.log(error);

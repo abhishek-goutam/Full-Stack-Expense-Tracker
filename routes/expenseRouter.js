@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const expenseController = require("../controller/expense.controller");
+const userController = require("../controller/user.controller");
 
 router.get("/expense", expenseController.getAllExpense);
 
@@ -12,6 +13,10 @@ router.put("/expense/:id", expenseController.postExpense);
 
 router.delete("/expense/:id", expenseController.deleteExpense);
 
-router.post("/expense/signUp",expenseController.signUp);
+router.post("/user/signUp", expenseController.signUp);
+
+router.get("/users", userController.getAllUsers);
+
+router.post("/user/login", userController.login);
 
 module.exports = router;

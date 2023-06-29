@@ -9,12 +9,16 @@ async function signUp() {
       "http://localhost:3000/api/expense/signUp",
       data
     );
-    // console.log("Message",res.message);
-    // document.getElementById("addToMe").getElementsByClassName("row justify-content-center").innerHTML +=
-    // "<h3>User already exist</h3>";
-    document.getElementById("addToMe").innerHTML +=
-    "<h3>User already exist, Please try a different email!</h3>";
-    // window.alert(res);
+
+    console.log("response",res)
+
+    if (res.data == "User exists") {
+      document.getElementById("addToMe").innerHTML +=
+        "<h3>User already exist, Please try a different email!</h3>";
+    }else{
+      document.getElementById("addToMe").innerHTML +=
+        "<h2>You have successfully Signed Up, You can login now</h2>";
+    }
   } catch (error) {
     console.log(error);
   }

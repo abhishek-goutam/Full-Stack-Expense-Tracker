@@ -1,5 +1,6 @@
 const Expenses = require("../model/expense.model");
 const User = require("../model/users.model");
+const path = require('path');
 
 module.exports = {
   getAllExpense: async (req, res) => {
@@ -42,14 +43,17 @@ module.exports = {
 
   signUp: async (req, res) => {
     const email = req.body.email;
+    console.log("------------",__dirname)
 
+  console.log("email------------------>,",email)
     const findUser = await User.findOne({ where: { email } });
 
     if (!findUser) {
       User.build(req.body)
         .save()
         .then((data) => {
-          res.send(data);
+          console.log("Signup data",data)
+          res.sendFile(res.sendFile(path.join(__dirname, "../", "views", "index.html")));
         })
         .catch((err) => res.send(err));
     } else {
@@ -59,4 +63,7 @@ module.exports = {
 
     // const findUser =  await User.findOne({where:{req.body.email}})
   },
+
+ 
+ 
 };

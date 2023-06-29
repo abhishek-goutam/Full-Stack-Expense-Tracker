@@ -4,16 +4,16 @@ let cors = require("cors");
 const bodyParser = require("body-parser");
 const db = require("./model/expense.model");
 const apiRoutes = require("./routes/expenseRouter");
-
-app.use(cors());
 const PORT = 3000;
+const path = require("path");
 
+app.use(express.static(path.join(__dirname,'css')));
+app.use(cors());
 app.use(
   bodyParser.urlencoded({
     extended: false,
   })
 );
-
 app.use(bodyParser.json());
 app.use("/api", apiRoutes);
 

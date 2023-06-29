@@ -13,7 +13,7 @@ router.put("/expense/:id", expenseController.postExpense);
 
 router.delete("/expense/:id", expenseController.deleteExpense);
 
-router.post("/user/signUp", expenseController.signUp);
+router.post("/user/signUp", userController.signUp);
 
 router.get("/users", userController.getAllUsers);
 

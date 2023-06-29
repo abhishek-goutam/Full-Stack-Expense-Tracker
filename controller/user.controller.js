@@ -1,5 +1,5 @@
 const User = require("../model/users.model");
-const path = require("path");
+const bcrypt = require("bcrypt");
 function isStringValid(string) {
   if (string === undefined || string.length === 0) {
     return true;
@@ -29,22 +29,45 @@ module.exports = {
       }
       const user = await User.findAll({ where: { email: email } });
       if (user.length > 0) {
-        if (user[0].password === password) {
-          res
-            .status(200)
-            .json({ success: true, message: "user Logged in successfull" });
-        } else {
-          return res
-            .status(400)
-            .json({ success: false, message: "Password Incorrect" });
-        }
+        bcrypt.compare(password, user[0].password, (err, result) => {
+          if (err) {
+            throw new Error("something went wrong" );
+          }
+          if (result == true) {
+            res
+              .status(200)
+              .json({ success: true, message: "User logged in successfully" });
+          } else {
+            return res
+              .status(400)
+              .json({ success: false, message: "password is incorrect" });
+          }
+        });
       } else {
         return res
           .status(404)
-          .json({ success: false, message: "User does not exist" });
+          .json({ success: false, message: "USer does not exist" });
       }
-    } catch (error) {
-      res.status(500).json({ success: false, message: error });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err });
+    }
+  },
+  signUp: async (req, res) => {
+    try {
+      const { email, name, password } = req.body;
+
+      if (isStringValid(email) || isStringValid(name)) {
+        return res
+          .status(400)
+          .json({ err: "Bad parameters: Something missing" });
+      }
+      bcrypt.hash(password, 10, async (err, hash) => {
+        console.log(err);
+        await User.create({ name, email, password: hash });
+        res.status(201).json({ message: "Successfully created new user" });
+      });
+    } catch (err) {
+      res.status(500).json(err);
     }
   },
 };

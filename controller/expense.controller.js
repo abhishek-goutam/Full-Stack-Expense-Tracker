@@ -41,29 +41,6 @@ module.exports = {
     }
   },
 
-  signUp: async (req, res) => {
-    const email = req.body.email;
-    console.log("------------",__dirname)
-
-  console.log("email------------------>,",email)
-    const findUser = await User.findOne({ where: { email } });
-
-    if (!findUser) {
-      User.build(req.body)
-        .save()
-        .then((data) => {
-          console.log("Signup data",data)
-          res.sendFile(res.sendFile(path.join(__dirname, "../", "views", "index.html")));
-        })
-        .catch((err) => res.send(err));
-    } else {
-      console.log("User Already exist");
-      res.send("User exists");
-    }
-
-    // const findUser =  await User.findOne({where:{req.body.email}})
-  },
-
  
  
 };

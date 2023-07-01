@@ -3,18 +3,23 @@ const money_plus = document.getElementById("money-plus");
 const money_minus = document.getElementById("money-minus");
 const list = document.getElementById("list");
 const form = document.getElementById("form");
-const amountDetail = document.getElementById("text");
+const amountDetail = document.getElementById("amtDesc");
 const amount = document.getElementById("amount");
 const category = document.getElementById("category");
 
 function getExpenses() {
   axios.get("http://localhost:3000/api/expense").then((res) => {
-    console.log("response from get API", res);
-    updateValues(res.data);
+    if (!res.data) {
+      console.log("response from get API", res);
+      updateValues(res.data);
+    }
   });
 }
 
-function addTransaction() {
+function addTransaction(e) {
+  e.preventDefault();
+  console.log("amtdescription",e.target.amountDetail.value);
+  console.log("amountdeatil",amountDetail.value);
   if (amountDetail.value.trim() === "" || amount.value.trim() === "") {
     alert("Please add a text and amount");
   } else {
@@ -84,9 +89,11 @@ function updateValues(transactions) {
   ).toFixed(2);
   const totalBalance = totalincome * 1 + totalExpense * 1;
 
-  balance.innerText = `$${totalBalance}`;
-  money_plus.innerText = `$${totalincome}`;
-  money_minus.innerText = `$${totalExpense}`;
+  console.log("balance", balance);
+
+  balance.innerHTML = `$ ${totalBalance}`;
+  money_plus.innerText = `$ ${totalincome}`;
+  money_minus.innerText = `$ ${totalExpense}`;
 
   for (let i = 0; i < transactions.length; i++) {
     const sign = transactions[i].category == "expense" ? "-" : "+";
@@ -108,14 +115,11 @@ function updateValues(transactions) {
 
 // Remove transaction by ID
 function removeTransaction(id) {
-  axios
-    .delete(`http://localhost:3000/api/expense/${id}`)
-    .then((res) => {
-      console.log("deleted response", res);
-      document.getElementById(id).remove();
-    });
+  axios.delete(`http://localhost:3000/api/expense/${id}`).then((res) => {
+    console.log("deleted response", res);
+    document.getElementById(id).remove();
+  });
 
   // transactions = transactions.filter((transaction) => transaction.id !== id);
 }
 
-// form.addEventListener("submit", addTransaction);

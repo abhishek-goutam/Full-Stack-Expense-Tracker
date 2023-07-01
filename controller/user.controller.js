@@ -28,6 +28,8 @@ module.exports = {
           .json({ success: false, message: "user Logged in successfull" });
       }
       const user = await User.findAll({ where: { email: email } });
+
+      console.log("user data",user[0].password)
       if (user.length > 0) {
         bcrypt.compare(password, user[0].password, (err, result) => {
           if (err) {

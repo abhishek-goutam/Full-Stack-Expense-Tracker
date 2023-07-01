@@ -6,11 +6,12 @@ async function login(e) {
       password: e.target.password.value,
     };
     const response = await axios.post(
-      "http://localhost:3000/api/user/login",
+      "http://localhost:3000/user/login",
       loginDetails
     );
     if (response.status == 200) {
       alert(response.data.message);
+      window.location.href ="../../ExpenseTracker/index.html"
     } else {
       throw new Error(response.data.message);
     }

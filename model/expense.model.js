@@ -9,19 +9,18 @@ const Expenses = sequelize.define("expenseDetails", {
     allowNull: false,
     primaryKey: true,
   },
+  expenseAmount: {
+    type: Sequelize.DOUBLE,
+    allowNull: false,
+  },
+  description: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
   category: {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  amountDetail: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-  amount: {
-    type: Sequelize.DOUBLE,
-    allowNull: false,
-  }
-
 });
 
 module.exports = Expenses;

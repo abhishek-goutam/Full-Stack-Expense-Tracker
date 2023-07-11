@@ -5,9 +5,11 @@ const path = require("path");
 module.exports = {
   getAllExpense: async (req, res) => {
     try {
-      const expenses = await Expense.findAll({where:{userId:req.user.id}});
+      const expenses = await Expense.findAll({
+        where: { userId: req.user.id },
+      });
 
-      return res.status(200).json({ expenses:expenses, success: true });
+      return res.status(200).json({ expenses: expenses, success: true });
     } catch (error) {
       return res.status(500).json({ error: error, success: false });
     }
@@ -46,6 +48,7 @@ module.exports = {
         expenseAmount,
         description,
         category,
+        userId: req.user.id,
       });
       return res.status(201).json({ result, success: true });
     } catch (error) {
@@ -55,11 +58,24 @@ module.exports = {
 
   deleteExpense: async (req, res) => {
     try {
-      const data = await Expense.destroy({ where: { id: req.params.id } });
-      console.log("Deleted", data);
-      res.send("data");
+      const expenseId = req.params.id;
+      console.log("&&&&&&&&&", expenseId);
+      if (expenseId == undefined || expenseId.length == 0) {
+        return res.status(400).json({ success: false });
+      }
+      const data = await Expense.destroy({
+        where: { id: expenseId, userId: req.user.id },
+      });
+
+      if(data ==0){
+        return res.status(404).json({success:false,message:'Expense does not belong to the user'})
+      }
+      return res
+        .status(200)
+        .json({ success: true, message: "Delete Successfully" });
     } catch (error) {
       console.log(error);
+      return res.status(500).json({ success: true, message: "Failed" });
     }
   },
 };

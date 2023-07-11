@@ -1,11 +1,20 @@
 const User = require("../model/users.model");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 function isStringValid(string) {
   if (string === undefined || string.length === 0) {
     return true;
   } else {
     return false;
   }
+}
+
+function generateAccessToken(id) {
+  return jwt.sign(
+    { userId: id },
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+  );
 }
 module.exports = {
   getAllUsers: async (req, res) => {
@@ -23,22 +32,25 @@ module.exports = {
       const { email, password } = req.body;
 
       if (isStringValid(email) || isStringValid(password)) {
-        res
+        return res
           .status(400)
-          .json({ success: false, message: "user Logged in successfull" });
+          .json(
+            { success: false, message: "Email or password missing" },
+            "secretkey"
+          );
       }
       const user = await User.findAll({ where: { email: email } });
 
-      console.log("user data",user[0].password)
+      console.log("user data", user[0].password);
       if (user.length > 0) {
         bcrypt.compare(password, user[0].password, (err, result) => {
           if (err) {
-            throw new Error("something went wrong" );
+            throw new Error("something went wrong");
           }
           if (result == true) {
-            res
+            return res
               .status(200)
-              .json({ success: true, message: "User logged in successfully" });
+              .json({ success: true, message: "User logged in successfully",token:generateAccessToken(user[0].id) });
           } else {
             return res
               .status(400)

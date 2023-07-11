@@ -5,9 +5,9 @@ const path = require("path");
 module.exports = {
   getAllExpense: async (req, res) => {
     try {
-      const expenses = await Expense.findAll();
+      const expenses = await Expense.findAll({where:{userId:req.user.id}});
 
-      return res.status(200).json({ expenses, success: true });
+      return res.status(200).json({ expenses:expenses, success: true });
     } catch (error) {
       return res.status(500).json({ error: error, success: false });
     }

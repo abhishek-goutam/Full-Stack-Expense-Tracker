@@ -2,10 +2,11 @@ const express = require("express");
 const app = express();
 let cors = require("cors");
 const bodyParser = require("body-parser");
-const db = require("./model/expense.model");
+const sequelize = require("./config/database");
+const Expense = require("./model/expense.model");
+const User = require("./model/users.model");
 const expenseRoutes = require("./routes/expenseRouter");
 const userRoutes = require("./routes/userRoutes");
-
 const PORT = 3000;
 const path = require("path");
 
@@ -20,7 +21,10 @@ app.use(bodyParser.json());
 app.use("/expense", expenseRoutes);
 app.use("/user", userRoutes);
 
-db.sequelize.sync({ force: false }).then(() => {
+User.hasMany(Expense);
+Expense.belongsTo(User)
+
+sequelize.sync().then(() => {
   app.listen(PORT, () => {
     console.log(`listening on http://localhost:${PORT}`);
   });

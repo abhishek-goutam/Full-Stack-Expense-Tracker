@@ -1,6 +1,4 @@
 const Expense = require("../model/expense.model");
-const User = require("../model/users.model");
-const path = require("path");
 
 module.exports = {
   getAllExpense: async (req, res) => {

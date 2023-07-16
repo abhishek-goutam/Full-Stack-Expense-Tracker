@@ -6,9 +6,10 @@ try {
       name: e.target.name.value,
       email: e.target.email.value,
       password: e.target.password.value,
+
     };
     const response = await axios.post(
-      "http://localhost:3000/api/user/signUp",
+      "http://localhost:3000/user/signUp",
       signUpDetails
     );
   

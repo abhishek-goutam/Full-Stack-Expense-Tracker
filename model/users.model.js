@@ -22,7 +22,7 @@ const User = sequelize.define("users", {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  ispremiumuser:Sequelize.BOOLEAN
+  ispremiumuser: { type: Sequelize.BOOLEAN },
 });
 
 module.exports = User;

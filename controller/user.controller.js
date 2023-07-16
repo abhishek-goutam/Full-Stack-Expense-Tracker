@@ -76,8 +76,7 @@ module.exports = {
           .json({ err: "Bad parameters: Something missing" });
       }
       bcrypt.hash(password, 10, async (err, hash) => {
-        console.log(err);
-        await User.create({ name, email, password: hash });
+        await User.create({ name, email, password: hash});
         res.status(201).json({ message: "Successfully created new user" });
       });
     } catch (err) {

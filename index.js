@@ -22,7 +22,7 @@ app.use(
 app.use(bodyParser.json());
 app.use("/expense", expenseRoutes);
 app.use("/user", userRoutes);
-app.use('/order',orderRoute)
+app.use('/order',orderRoute);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);

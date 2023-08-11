@@ -1,5 +1,6 @@
 const Razorpay = require("razorpay");
 const Order = require("../model/orders");
+const userController = require("./user.controller");
 
 const purchasePremium = async (req, res) => {
   try {
@@ -30,31 +31,33 @@ const purchasePremium = async (req, res) => {
 
 const updateTransactionStatus = async (req, res) => {
   try {
+    console.log("request body ", req.body);
     const { payment_id, order_id } = req.body;
-    Order.findOne({ where: { orderid: order_id } })
-      .then((order) => {
-        order
-          .update({ paymentid: payment_id, status: "SUCCESSFUL" })
-          .then(() => {
-            req.user
-              .update({ ispremiumuser: true })
-              .then(() => {
-                return res
-                  .status(202)
-                  .json({ success: true, message: "Transaction Successful" });
-              })
-              .catch((err) => {
-                throw new Error(err);
-              });
-          })
-          .catch((err) => {
-            throw new Error(err);
-          });
-      })
-      .catch((err) => {
-        throw new Error(err);
-      });
-  } catch (error) {}
+
+    const order = await Order.findOne({ where: { orderid: order_id } });
+    const promise1 = order.update({
+      paymentid: payment_id,
+      status: "SUCCESSFUL",
+    });
+    const promise2 = req.user.update({ ispremiumuser: true });
+
+    Promise.all([promise1, promise2]).then((value) => {
+      console.log("resolved promise", value);
+      return res
+        .status(202)
+        .json({
+          success: true,
+          message: "Transaction Successful",
+          token: userController.generateAccessToken(
+            value.userId,
+            undefined,
+            true
+          ),
+        });
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 module.exports = {

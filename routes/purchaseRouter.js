@@ -12,9 +12,11 @@ router.get(
 );
 
 router.post(
-  "/updatetransaction,",
+  "/updatetransaction",
   authenticate.authenticate,
   purchaseCOntroller.updateTransactionStatus
 );
+
+
 
 module.exports = router;

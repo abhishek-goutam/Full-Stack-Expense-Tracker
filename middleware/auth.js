@@ -10,10 +10,10 @@ const authenticate = (req, res, next) => {
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
     );
 
-    console.log("---->>>><<<<<<", user.userId);
+    // console.log("---->>>><<<<<<", user.userId);
     User.findByPk(user.userId)
       .then((user) => {
-        console.log("**********", JSON.stringify(user));
+        // console.log("**********", JSON.stringify(user));
         req.user = user;
         next();
       })

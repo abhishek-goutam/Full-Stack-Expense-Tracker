@@ -10,9 +10,9 @@ function isStringValid(string) {
   }
 }
 
-function generateAccessToken(id) {
+function generateAccessToken(id, name, ispremiumuser) {
   return jwt.sign(
-    { userId: id },
+    { userId: id, name: name, ispremiumuser },
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
   );
 }
@@ -41,16 +41,22 @@ module.exports = {
       }
       const user = await User.findAll({ where: { email: email } });
 
-      console.log("user data", user[0].password);
+      // console.log("user datazzzzzzzzzzzzzzzz", user[0]);
       if (user.length > 0) {
         bcrypt.compare(password, user[0].password, (err, result) => {
           if (err) {
             throw new Error("something went wrong");
           }
           if (result == true) {
-            return res
-              .status(200)
-              .json({ success: true, message: "User logged in successfully",token:generateAccessToken(user[0].id) });
+            return res.status(200).json({
+              success: true,
+              message: "User logged in successfully",
+              token: generateAccessToken(
+                user[0].id,
+                user[0].name,
+                user[0].ispremiumuser
+              ),
+            });
           } else {
             return res
               .status(400)
@@ -76,11 +82,12 @@ module.exports = {
           .json({ err: "Bad parameters: Something missing" });
       }
       bcrypt.hash(password, 10, async (err, hash) => {
-        await User.create({ name, email, password: hash});
+        await User.create({ name, email, password: hash });
         res.status(201).json({ message: "Successfully created new user" });
       });
     } catch (err) {
       res.status(500).json(err);
     }
   },
+  generateAccessToken,
 };

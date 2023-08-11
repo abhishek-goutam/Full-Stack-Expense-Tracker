@@ -8,6 +8,10 @@ router.get(
   userAuthenticate.authenticate,
   expenseController.getAllExpense
 );
+router.get(
+  "/getAllExpenses",
+  expenseController.getAllExpense
+);
 router.get("/expense/:id", expenseController.getExpense);
 
 router.post("/addexpense",userAuthenticate.authenticate, expenseController.addExpense);

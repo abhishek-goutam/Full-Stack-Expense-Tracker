@@ -17,9 +17,11 @@ module.exports = {
     try {
       const expenseData = await Expense.findByPk(req.params.id);
       console.log(expenseData);
-      res.send(expenseData);
+      return res.status(200).json({ expenses: expenseData, success: true });
+      // res.send(expenseData);
     } catch (error) {
       console.log(error);
+      return res.status(500).json({ error: error, success: false });
     }
   },
 
@@ -37,7 +39,7 @@ module.exports = {
     try {
       const { expenseAmount, description, category } = req.body;
 
-      if (expenseAmount == undefined || expenseAmount.length === 0) {
+      if (expenseAmount == undefined || expenseAmount.length == 0) {
         return res
           .status(400)
           .json({ success: false, message: "Parameters missing" });
@@ -48,6 +50,12 @@ module.exports = {
         category,
         userId: req.user.id,
       });
+      const totalExpense =
+        Number(req.user.totalExpense) + Number(expenseAmount);
+      await User.update(
+        { totalExpenses: totalExpense },
+        { where: { id: req.user.id } }
+      );
       return res.status(201).json({ result, success: true });
     } catch (error) {
       return res.status(500).json({ success: false, error: error });
@@ -57,7 +65,6 @@ module.exports = {
   deleteExpense: async (req, res) => {
     try {
       const expenseId = req.params.id;
-      console.log("&&&&&&&&&", expenseId);
       if (expenseId == undefined || expenseId.length == 0) {
         return res.status(400).json({ success: false });
       }
@@ -65,8 +72,11 @@ module.exports = {
         where: { id: expenseId, userId: req.user.id },
       });
 
-      if(data ==0){
-        return res.status(404).json({success:false,message:'Expense does not belong to the user'})
+      if (data == 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Expense does not belong to the user",
+        });
       }
       return res
         .status(200)

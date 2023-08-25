@@ -1,3 +1,4 @@
+const sequelize = require("../config/database");
 const Expense = require("../model/expense.model");
 
 module.exports = {
@@ -35,6 +36,7 @@ module.exports = {
     //   .catch((err) => res.send(err));
 
     // ***********Second Method ***********
+    const t = await sequelize.transaction();
 
     try {
       const { expenseAmount, description, category } = req.body;
@@ -44,20 +46,25 @@ module.exports = {
           .status(400)
           .json({ success: false, message: "Parameters missing" });
       }
-      const result = await Expense.create({
-        expenseAmount,
-        description,
-        category,
-        userId: req.user.id,
-      });
+      const result = await Expense.create(
+        {
+          expenseAmount,
+          description,
+          category,
+          userId: req.user.id,
+        },
+        { transaction: t }
+      );
       const totalExpense =
         Number(req.user.totalExpense) + Number(expenseAmount);
       await User.update(
         { totalExpenses: totalExpense },
-        { where: { id: req.user.id } }
+        { where: { id: req.user.id }, transaction: t }
       );
-      return res.status(201).json({ result, success: true });
+      await t.commit();
+      return res.status(200).json({ result, success: true });
     } catch (error) {
+      await t.rollback();
       return res.status(500).json({ success: false, error: error });
     }
   },

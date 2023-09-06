@@ -89,5 +89,8 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+  download: async (req,res)=>{
+    console.log("Downloading")
+  },
   generateAccessToken,
 };

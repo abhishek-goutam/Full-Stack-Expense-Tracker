@@ -8,5 +8,6 @@ router.post("/login", userController.login);
 
 router.post("/signUp", userController.signUp);
 
+router.get('/download',userController.download)
 module.exports = router;
        

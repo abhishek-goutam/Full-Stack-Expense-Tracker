@@ -10,7 +10,8 @@ const expenseRoutes = require("./routes/expenseRouter");
 const userRoutes = require("./routes/userRoutes");
 const orderRoute = require("./routes/purchaseRouter");
 const premium = require("./routes/premiumFeatures");
-const resetPasswordRoutes = require("./routes/resetpassword");
+const resetPasswordRoutes = require("./routes/resetPassword");
+const Forgotpassword = require("./model/forgotPassword");
 
 const PORT = 3000;
 const path = require("path");

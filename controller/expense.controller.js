@@ -1,5 +1,7 @@
 const sequelize = require("../config/database");
 const Expense = require("../model/expense.model");
+const UserServices = require('../services/userservices');
+const S3Services = require('../services/S3services');
 
 module.exports = {
   getAllExpense: async (req, res) => {
@@ -12,6 +14,21 @@ module.exports = {
     } catch (error) {
       return res.status(500).json({ error: error, success: false });
     }
+  },
+
+  downloadExpense: async (req, res) => {
+   try {
+    const expenses = await UserServices.getExpenses(req);
+    console.log(expenses);
+    const stringifiedExpenses = JSON.stringify(expenses);
+    const userId = req.user.id;
+
+    const fileName = `Expense${userId}/${new Date()}.txt`;
+    const fileURL = await S3Services.uploadToS3(stringifiedExpenses, fileName);
+    res.status(200).json({ fileURL, success: true });
+   } catch (error) {
+    res.status(500).json({fileURL:'',success:false,err:err})
+   }
   },
 
   getExpense: async (req, res) => {
@@ -39,9 +56,10 @@ module.exports = {
     const t = await sequelize.transaction();
 
     try {
+      console.log("req.user----------", req.user);
       const { expenseAmount, description, category } = req.body;
 
-      if (expenseAmount == undefined || expenseAmount.length == 0) {
+      if (expenseAmount === undefined || expenseAmount.length === 0) {
         return res
           .status(400)
           .json({ success: false, message: "Parameters missing" });

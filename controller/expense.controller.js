@@ -1,34 +1,48 @@
 const sequelize = require("../config/database");
 const Expense = require("../model/expense.model");
-const UserServices = require('../services/userservices');
-const S3Services = require('../services/S3services');
+const UserServices = require("../services/userservices");
+const S3Services = require("../services/S3services");
 
 module.exports = {
   getAllExpense: async (req, res) => {
     try {
-      const expenses = await Expense.findAll({
+      const page = req.query.page ? parseInt(req.query.page) : 1;
+      const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 10;
+      const expenses = await Expense.findAndCountAll({
         where: { userId: req.user.id },
+        limit: pageSize,
+        offset: offset,
       });
 
-      return res.status(200).json({ expenses: expenses, success: true });
+      return res.status(200).json({
+        expenses: expenses,
+        totalExpenses: expenses.count,
+        success: true,
+      });
     } catch (error) {
-      return res.status(500).json({ error: error, success: false });
+      return res.status(500).json({
+        error: error,
+        success: false,
+      });
     }
   },
 
   downloadExpense: async (req, res) => {
-   try {
-    const expenses = await UserServices.getExpenses(req);
-    console.log(expenses);
-    const stringifiedExpenses = JSON.stringify(expenses);
-    const userId = req.user.id;
+    try {
+      const expenses = await UserServices.getExpenses(req);
+      console.log(expenses);
+      const stringifiedExpenses = JSON.stringify(expenses);
+      const userId = req.user.id;
 
-    const fileName = `Expense${userId}/${new Date()}.txt`;
-    const fileURL = await S3Services.uploadToS3(stringifiedExpenses, fileName);
-    res.status(200).json({ fileURL, success: true });
-   } catch (error) {
-    res.status(500).json({fileURL:'',success:false,err:err})
-   }
+      const fileName = `Expense${userId}/${new Date()}.txt`;
+      const fileURL = await S3Services.uploadToS3(
+        stringifiedExpenses,
+        fileName
+      );
+      res.status(200).json({ fileURL, success: true });
+    } catch (error) {
+      res.status(500).json({ fileURL: "", success: false, err: err });
+    }
   },
 
   getExpense: async (req, res) => {
@@ -53,10 +67,10 @@ module.exports = {
     //   .catch((err) => res.send(err));
 
     // ***********Second Method ***********
-    const t = await sequelize.transaction();
+    // const t = await sequelize.transaction();
 
     try {
-      console.log("req.user----------", req.user);
+      console.log("req.user----------", req.body);
       const { expenseAmount, description, category } = req.body;
 
       if (expenseAmount === undefined || expenseAmount.length === 0) {
@@ -70,19 +84,24 @@ module.exports = {
           description,
           category,
           userId: req.user.id,
-        },
-        { transaction: t }
+        }
+        // { transaction: t }
       );
+
+      console.log("heyyyyyyyyyy---------", result);
+      // console.log("TTTTTTTT",t)
       const totalExpense =
         Number(req.user.totalExpense) + Number(expenseAmount);
       await User.update(
         { totalExpenses: totalExpense },
-        { where: { id: req.user.id }, transaction: t }
+        {
+          where: { id: req.user.id }, // transaction: t
+        }
       );
-      await t.commit();
+      // await t.commit();
       return res.status(200).json({ result, success: true });
     } catch (error) {
-      await t.rollback();
+      // await t.rollback();
       return res.status(500).json({ success: false, error: error });
     }
   },

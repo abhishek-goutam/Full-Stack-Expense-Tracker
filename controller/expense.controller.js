@@ -2,30 +2,58 @@ const sequelize = require("../config/database");
 const Expense = require("../model/expense.model");
 const UserServices = require("../services/userservices");
 const S3Services = require("../services/S3services");
+const Users = require('../model/users.model')
 
 module.exports = {
-  getAllExpense: async (req, res) => {
-    try {
-      const page = req.query.page ? parseInt(req.query.page) : 1;
-      const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 10;
-      const expenses = await Expense.findAndCountAll({
-        where: { userId: req.user.id },
-        limit: pageSize,
-        offset: offset,
-      });
+//   getAllExpense: async (req, res) => {
+//     try {
+    
+//       const page = req.query.page ? parseInt(req.query.page) : 1;
+//       const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 10;
+//       const expenses = await Expense.findAll({
+//         where: { userId: req.user.id },
+//         limit: pageSize,
+//       });
+// console.log("Expense Count",expenses)
+//       return res.status(200).json({
+//         expenses: expenses,
+//         totalExpenses: expenses.count,
+//         success: true,
+//       });
+//     } catch (error) {
+//       return res.status(500).json({
+//         error: error,
+//         success: false,
+//       });
+//     }
+//   },
+getAllExpense: async (req, res) => {
+  try {
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 10;
+    
+    const offset = (page - 1) * pageSize;
 
-      return res.status(200).json({
-        expenses: expenses,
-        totalExpenses: expenses.count,
-        success: true,
-      });
-    } catch (error) {
-      return res.status(500).json({
-        error: error,
-        success: false,
-      });
-    }
-  },
+    const expenses = await Expense.findAndCountAll({
+      where: { userId: req.user.id },
+      limit: pageSize,
+      offset: offset,
+    });
+
+    console.log("Expense Count", expenses.count);
+
+    return res.status(200).json({
+      expenses: expenses.rows,
+      totalExpenses: expenses.count,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message,
+      success: false,
+    });
+  }
+},
 
   downloadExpense: async (req, res) => {
     try {
@@ -70,7 +98,7 @@ module.exports = {
     // const t = await sequelize.transaction();
 
     try {
-      console.log("req.user----------", req.body);
+      // console.log("req.user----------", req.body);
       const { expenseAmount, description, category } = req.body;
 
       if (expenseAmount === undefined || expenseAmount.length === 0) {
@@ -85,19 +113,20 @@ module.exports = {
           category,
           userId: req.user.id,
         }
-        // { transaction: t }
       );
 
-      console.log("heyyyyyyyyyy---------", result);
+      // console.log("heyyyyyyyyyy---------", result);
       // console.log("TTTTTTTT",t)
+      
       const totalExpense =
-        Number(req.user.totalExpense) + Number(expenseAmount);
-      await User.update(
+        Number(req.user.totalExpenses) + Number(expenseAmount);
+      await Users.update(
         { totalExpenses: totalExpense },
         {
           where: { id: req.user.id }, // transaction: t
         }
       );
+      // console.log("total expense",totalExpense)
       // await t.commit();
       return res.status(200).json({ result, success: true });
     } catch (error) {

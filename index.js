@@ -13,7 +13,6 @@ const premium = require("./routes/premiumFeatures");
 const resetPasswordRoutes = require("./routes/resetPassword");
 const Forgotpassword = require("./model/forgotPassword");
 
-const PORT = 3000;
 const path = require("path");
 
 app.use(express.static(path.join(__dirname, "css")));
@@ -37,7 +36,7 @@ Order.belongsTo(User);
 User.hasMany(Forgotpassword);
 Forgotpassword.belongsTo(User);
 sequelize.sync().then(() => {
-  app.listen(PORT, () => {
+  app.listen(process.env.PORT || 3000, () => {
     console.log(`listening on http://localhost:${PORT}`);
   });
 });

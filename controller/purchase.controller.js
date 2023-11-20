@@ -5,14 +5,20 @@ const userController = require("./user.controller");
 const purchasePremium = async (req, res) => {
   try {
     var rzp = new Razorpay({
-      key_id: "rzp_test_gbMlReD4lA96rI",
-      key_secret: "pLjizrySX3CH2uZNuAGlknJ8",
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
 
-    const amount = 2500;
 
-    rzp.orders.create({ amount, currency: "INR" }, (err, order) => {
+    // const amount = 2500;
+    var options = {
+      amount: 2500,  // amount in the smallest currency unit
+      currency: "INR",
+      receipt: "order_rcptid_11"
+    };
+    rzp.orders.create(options, (err, order) => {  
       if (err) {
+        console.log("inside create order",order)
         throw new Error(JSON.stringify(err));
       }
       req.user
@@ -29,6 +35,7 @@ const purchasePremium = async (req, res) => {
   }
 };
 
+
 const updateTransactionStatus = async (req, res) => {
   try {
     console.log("request body ", req.body);
@@ -42,7 +49,7 @@ const updateTransactionStatus = async (req, res) => {
     const promise2 = req.user.update({ ispremiumuser: true });
 
     Promise.all([promise1, promise2]).then((value) => {
-      console.log("resolved promise", value);
+      // console.log("resolved promise", value[1].ispremiumuser);
       return res
         .status(202)
         .json({
@@ -53,6 +60,7 @@ const updateTransactionStatus = async (req, res) => {
             undefined,
             true
           ),
+          ispremiumuser:value[1].ispremiumuser
         });
     });
   } catch (error) {
